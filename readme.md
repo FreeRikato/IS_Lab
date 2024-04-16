@@ -9,8 +9,8 @@
         - [x] Hill Cipher
         - [x] Vigenere Cipher
     - [x] Combined Cipher
-- [ ] Transposition Cipher
-    - [ ] Row Column Cipher
-- [ ] RSA (Implemenetation only)
-- [ ] Diffie Hellman (Implementation only)
-- [ ] SQL Injection (DDL + DML + Basic commands)
+- [x] Transposition Cipher
+    - [x] Row Column Cipher
+- [x] RSA (Implemenetation only)
+- [x] Diffie Hellman (Implementation only)
+- [x] SQL Injection (DDL + DML + Basic commands)
