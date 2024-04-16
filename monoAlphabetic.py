@@ -11,10 +11,15 @@ def caesar_cipher(text, shift):
     return result
 
 
-def keyword_cipher(text, keyword):
-    # Create a cipher alphabet based on the keyword
+def keyword_cipher(text, keyword, mode='encrypt'):
+    # Create cipher alphabet based on keyword (same as before)
     alphabet = ''.join(sorted(set(keyword), key=keyword.index)) + ''.join(chr(i) for i in range(ord('a'), ord('z') + 1) if chr(i) not in keyword)
-    key = {chr(i): alphabet[i - ord('a')] for i in range(ord('a'), ord('z') + 1)}
+    if mode == 'encrypt':
+        # Encryption key (character -> keyword alphabet replacement)
+        key = {chr(i): alphabet[i - ord('a')] for i in range(ord('a'), ord('z') + 1)}
+    else:
+        # Decryption key - reverse the mapping
+        key = {alphabet[i - ord('a')]: chr(i) for i in range(ord('a'), ord('z') + 1)}
     # Encrypt or decrypt by substituting based on the keyword-generated alphabet
     result = ''.join(key[char] if char in key else char for char in text.lower())
     return result
@@ -43,9 +48,11 @@ print("Decrypted:", decrypted)
 # Example usage:
 keyword = "keyword"
 text = "hello"
-encrypted = keyword_cipher(text, keyword)
-# Decryption would require reversing the key map
+encrypted = keyword_cipher(text, keyword, 'encrypt')
+decrypted = keyword_cipher(encrypted, keyword, 'decrypt')
+
 print("Encrypted:", encrypted)
+print("Decrypted:", decrypted)
 
 
 # Example usage:
