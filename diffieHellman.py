@@ -1,63 +1,33 @@
-# Diffie-Hellman Code
+def is_prime(n):
+    if n <= 1:
+        return False
+    for i in range(2, int(n ** 0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
 
+def compute_shared_secret(base, secret, modulus):
+    return pow(base, secret, modulus)
 
-def prime_checker(p):
-    # Checks If the number entered is a Prime Number or not
-    if p < 1:
-       return -1
-    elif p > 1:
-       if p == 2:
-           return 1
-       for i in range(2, p):
-           if p % i == 0:
-               return -1
-           return 1
+# Input and validation for modulus
+modulus = int(input("Enter a prime modulus (p): "))
+if not is_prime(modulus): print("Modulus must be a prime number.")
 
+# Input and validation for base
+base = int(input("Enter base (g): "))
+if base <= 1 or base >= modulus: print("Base must be greater than 1 and less than modulus.")
 
-def primitive_check(g, p, L):
-    # Checks If The Entered Number Is A Primitive Root Or Not
-    for i in range(1, p):
-       L.append(pow(g, i) % p)
-    for i in range(1, p):
-       if L.count(i) > 1:
-           L.clear()
-           return -1
-       return 1
+# Input for user's secret
+user_secret = int(input("Enter your secret number: "))
+if user_secret <= 0: print("Secret number must be positive.")
 
+# Compute user's public value
+user_public = compute_shared_secret(base, user_secret, modulus)
+print(f"Your public value to send to the other party: {user_public}")
 
-l = []
-while 1:
-    P = int(input("Enter P : "))
-    if prime_checker(P) == -1:
-       print("Number Is Not Prime, Please Enter Again!")
-       continue
-    break
+# Input for the other party's public value
+other_public = int(input("Enter the other party's public value: "))
 
-while 1:
-    G = int(input(f"Enter The Primitive Root Of {P} : "))
-    if primitive_check(G, P, l) == -1:
-       print(f"Number Is Not A Primitive Root Of {P}, Please Try Again!")
-       continue
-    break
-
-# Private Keys
-x1, x2 = int(input("Enter The Private Key Of User 1 : ")), int(
-    input("Enter The Private Key Of User 2 : "))
-while 1:
-    if x1 >= P or x2 >= P:
-       print(f"Private Key Of Both The Users Should Be Less Than {P}!")
-       continue
-    break
-
-# Calculate Public Keys
-y1, y2 = pow(G, x1) % P, pow(G, x2) % P
-
-# Generate Secret Keys
-k1, k2 = pow(y2, x1) % P, pow(y1, x2) % P
-
-print(f"\nSecret Key For User 1 Is {k1}\nSecret Key For User 2 Is {k2}\n")
-
-if k1 == k2:
-    print("Keys Have Been Exchanged Successfully")
-else:
-    print("Keys Have Not Been Exchanged Successfully")
+# Compute shared secret
+shared_secret = compute_shared_secret(other_public, user_secret, modulus)
+print(f"Your shared secret is: {shared_secret}")

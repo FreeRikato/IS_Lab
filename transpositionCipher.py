@@ -1,22 +1,38 @@
 def transpose(text, key, mode):
-  # Remove non-alphabetic characters and convert to uppercase
-  text = ''.join(char.upper() for char in text if char.isalpha())
-  # Create empty list to store transposed characters
-  cipher = []
-  # Loop through each character based on the mode
-  if mode == 'encrypt':
-    # Fill columns for encryption
-    for i in range(key):
-      col = ''.join(text[j::key] for j in range(i, len(text), key))
-      cipher.append(col)
-  else:
-    # Fill rows for decryption
-    decrypted_len = len(text) // key  # Calculate expected row length with padding if needed
-    for i in range(decrypted_len):
-      row = ''.join(text[i * key: (i + 1) * key])
-      cipher.append(row[:decrypted_len])  # Truncate extra characters for padding
-  # Join the transposed characters and return
-  return ''.join(cipher)
+    # Remove non-alphabetic characters and convert to uppercase
+    text = ''.join(char for char in text.upper() if char.isalpha())
+
+    if mode == 'encrypt':
+        # Encrypt by reading columns
+        cipher = []
+        for i in range(key):
+            cipher.append(text[i::key])
+        return ''.join(cipher)
+    elif mode == 'decrypt':
+        # Decrypt by reassembling into columns correctly
+        n = len(text)
+        full_columns = n // key
+        short_columns = n % key
+        rows = [''] * key
+        start_idx = 0
+
+        for i in range(key):
+            if i < short_columns:
+                # Columns that have an extra character (due to uneven division)
+                rows[i] = text[start_idx:start_idx + full_columns + 1]
+                start_idx += full_columns + 1
+            else:
+                rows[i] = text[start_idx:start_idx + full_columns]
+                start_idx += full_columns
+
+        # Reassemble by rows
+        plain = []
+        for i in range(full_columns + 1):  # +1 because the longest column might be one character longer
+            for j in range(key):
+                if i < len(rows[j]):
+                    plain.append(rows[j][i])
+
+        return ''.join(plain)
 
 # Example usage
 text = "HELLO WORLD"
