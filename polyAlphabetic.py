@@ -18,19 +18,34 @@ def hill_encrypt(text, key):
   return cipher_text
 
 
-def vigenere_encrypt(text, key):
-    # Repeat the key to match the length of the text
-    key = (key * (len(text) // len(key) + 1))[:len(text)]
-    # Encrypt each character by shifting it according to the key
-    return ''.join(chr((ord(c) - ord('A') + ord(k) - ord('A')) % 26 + ord('A'))
-                   for c, k in zip(text.upper(), key.upper()) if c.isalpha())
+def vigenere_cipher(text, key, mode):
+    # Adjust the key to match the length of the text by repeating it
+    key = (key * ((len(text) // len(key)) + 1))[:len(text)]
 
-def vigenere_decrypt(cipher_text, key):
-    # Repeat the key to match the length of the ciphertext
-    key = (key * (len(cipher_text) // len(key) + 1))[:len(cipher_text)]
-    # Decrypt each character by reversing the shift according to the key
-    return ''.join(chr((ord(c) - ord('A') - (ord(k) - ord('A')) + 26) % 26 + ord('A'))
-                   for c, k in zip(cipher_text.upper(), key.upper()) if c.isalpha())
+    # Convert the text and key into uppercase for case insensitivity
+    text = text.upper()
+    key = key.upper()
+
+    # Create the result list to store each processed character
+    result = []
+
+    # Encrypt or decrypt each character based on the mode
+    for char, key_char in zip(text, key):
+        if char.isalpha():  # Process only alphabetic characters
+            shift = ord(key_char) - ord('A')
+            if mode == 'encrypt':
+                # Encrypt by shifting char to the right by key_char's position
+                new_char = chr((ord(char) - ord('A') + shift) % 26 + ord('A'))
+            elif mode == 'decrypt':
+                # Decrypt by shifting char to the left by key_char's position
+                new_char = chr((ord(char) - ord('A') - shift + 26) % 26 + ord('A'))
+            result.append(new_char)
+        else:
+            # Append non-alphabetic characters unchanged (optional)
+            result.append(char)
+
+    # Join the list into a string and return it
+    return ''.join(result)
 
 # Example usage:
 key = [[5, 8], [17, 3]]  # Example key (must be invertible modulo 26)
@@ -38,10 +53,14 @@ text = "HELLO"
 encrypted = hill_encrypt(text, key)
 print("Encrypted:", encrypted)
 
-# Example usage:
-key = "KEYWORD"
-text = "HELLO"
-encrypted = vigenere_encrypt(text, key)
-decrypted = vigenere_decrypt(encrypted, key)
-print("Encrypted:", encrypted)
-print("Decrypted:", decrypted)
+# Example usage
+text = "HELLO WORLD"
+key = "KEY"
+mode = 'encrypt'
+
+encrypted_text = vigenere_cipher(text, key, 'encrypt')
+decrypted_text = vigenere_cipher(encrypted_text, key, 'decrypt')
+
+print(f"Original Text: {text}")
+print(f"Encrypted Text: {encrypted_text}")
+print(f"Decrypted Text: {decrypted_text}")
