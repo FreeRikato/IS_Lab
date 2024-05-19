@@ -1,22 +1,25 @@
-def hill_encrypt(text, key):
-    # Sanitize the input text: remove non-alphabetic characters and convert to uppercase
+def hill_cipher(text, key, mode='encrypt'):
+    def mod_inv(a, m):
+        m0, x0, x1 = m, 0, 1
+        while a > 1:
+            q, a, m = a // m, m, a % m
+            x0, x1 = x1 - q * x0, x0
+        return x1 + m0 if x1 < 0 else x1
+
+    def matrix_inv(matrix, mod):
+        a, b, c, d = matrix[0][0], matrix[0][1], matrix[1][0], matrix[1][1]
+        det_inv = mod_inv((a * d - b * c) % mod, mod)
+        return [[d * det_inv % mod, -b * det_inv % mod], [-c * det_inv % mod, a * det_inv % mod]]
+
+    if mode == 'decrypt':
+        key = matrix_inv(key, 26)
+
     text = ''.join(filter(str.isalpha, text.upper()))
-    # Initialize the cipher text variable
-    cipher_text = ""
-    # Process the text in blocks of 2 characters (since the key matrix is 2x2)
+    result = ""
     for i in range(0, len(text), 2):
-        # Make sure there's a complete block; pad with 'A' if necessary
-        block = text[i:i+2].ljust(2, 'A')
-        # Convert characters to numbers (A=0, B=1, ..., Z=25)
-        block_num = [ord(char) - ord('A') for char in block]
-        # Perform matrix multiplication using the key and modulo 26
-        cipher_block = [
-            (key[0][0] * block_num[0] + key[0][1] * block_num[1]) % 26,
-            (key[1][0] * block_num[0] + key[1][1] * block_num[1]) % 26
-        ]
-        # Convert numbers back to characters
-        cipher_text += ''.join(chr(num + ord('A')) for num in cipher_block)
-    return cipher_text
+        block = [ord(char) - ord('A') for char in text[i:i+2].ljust(2, 'A')]
+        result += ''.join(chr((key[row][0] * block[0] + key[row][1] * block[1]) % 26 + ord('A')) for row in range(2))
+    return result
 
 
 def vigenere_cipher(text, key, mode):
@@ -49,10 +52,14 @@ def vigenere_cipher(text, key, mode):
     return ''.join(result)
 
 # Example usage:
-key = [[5, 8], [17, 3]]  # Example key (must be invertible modulo 26)
+key = [[5, 8], [17, 3]]
 text = "HELLO"
-encrypted = hill_encrypt(text, key)
+encrypted = hill_cipher(text, key, 'encrypt')
+decrypted = hill_cipher(encrypted, key, 'decrypt')
+
+print(f"Original Text: {text}")
 print("Encrypted:", encrypted)
+print("Decrypted:", decrypted)
 
 # Example usage
 text = "HELLO WORLD"
