@@ -1,46 +1,26 @@
-def transpose(text, key, mode):
-    # Remove non-alphabetic characters and convert to uppercase
-    text = ''.join(char for char in text.upper() if char.isalpha())
+def encrypt(message, key):
+    cipher = ""
+    for k in range(key):
+        for i in range(k, len(message), key):
+            cipher += message[i]
+    return cipher
 
-    if mode == 'encrypt':
-        # Encrypt by reading columns
-        cipher = []
-        for i in range(key):
-            cipher.append(text[i::key])
-        return ''.join(cipher)
-    elif mode == 'decrypt':
-        # Decrypt by reassembling into columns correctly
-        n = len(text)
-        full_columns = n // key
-        short_columns = n % key
-        rows = [''] * key
-        start_idx = 0
+def decrypt(cipher, key):
+    num_cols = key
+    num_rows = len(cipher) // key
+    decrypted = [""] * num_rows
 
-        for i in range(key):
-            if i < short_columns:
-                # Columns that have an extra character (due to uneven division)
-                rows[i] = text[start_idx:start_idx + full_columns + 1]
-                start_idx += full_columns + 1
-            else:
-                rows[i] = text[start_idx:start_idx + full_columns]
-                start_idx += full_columns
+    col = 0
+    for char in cipher:
+        decrypted[col % num_rows] += char
+        col += 1
 
-        # Reassemble by rows
-        plain = []
-        for i in range(full_columns + 1):  # +1 because the longest column might be one character longer
-            for j in range(key):
-                if i < len(rows[j]):
-                    plain.append(rows[j][i])
-
-        return ''.join(plain)
+    return "".join(decrypted)
 
 # Example usage
-text = "HELLO WORLD"
-key = 3
-
-encrypted_text = transpose(text, key, 'encrypt')
-decrypted_text = transpose(encrypted_text, key, 'decrypt')
-
-print(f"Original Text: {text}")
-print(f"Encrypted Text: {encrypted_text}")
-print(f"Decrypted Text: {decrypted_text}")
+message = "HELLO WORLD"
+key = 4
+encrypted = encrypt(message.replace(" ", ""), key)
+print(f"Encrypted: {encrypted}")
+decrypted = decrypt(encrypted, key)
+print(f"Decrypted: {decrypted}")
