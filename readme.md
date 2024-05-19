@@ -15,6 +15,9 @@
 - [x] Diffie Hellman (Implementation only)
 - [x] SQL Injection (DDL + DML + Basic commands)
 
+- [ ] Decryption for ciphers
+- [ ] Frequency analysis
+- [ ] Socket programming
 ### Clone this repository in your local machine
 ```bash
 git clone https://github.com/FreeRikato/IS_Lab
